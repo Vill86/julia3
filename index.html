@@ -20,7 +20,6 @@
             overflow-x: hidden;
         }
 
-        /* Компактная верхняя панель */
         .top-bar {
             background: rgba(0, 0, 0, 0.9);
             padding: 8px 15px;
@@ -48,7 +47,6 @@
             margin-left: 3px;
         }
 
-        /* Компактная шкала тревоги */
         .anxiety-mini {
             height: 6px;
             background: rgba(0, 0, 0, 0.8);
@@ -62,7 +60,6 @@
             transition: width 0.5s ease;
         }
 
-        /* Компактный контейнер */
         .game-wrapper {
             max-width: 800px;
             margin: 0 auto;
@@ -77,7 +74,6 @@
             box-shadow: 0 0 30px rgba(255, 0, 102, 0.4);
         }
 
-        /* Экраны */
         .screen {
             display: none;
         }
@@ -92,7 +88,6 @@
             to { opacity: 1; }
         }
 
-        /* Компактное меню */
         .menu-title {
             font-size: 36px;
             text-align: center;
@@ -116,7 +111,6 @@
             font-size: 14px;
         }
 
-        /* Компактные кнопки */
         .btn {
             width: 100%;
             padding: 12px;
@@ -151,7 +145,6 @@
             transform: translateY(-2px);
         }
 
-        /* Компактная информация об уровне */
         .level-info {
             text-align: center;
             margin-bottom: 15px;
@@ -172,7 +165,6 @@
             color: #aaa;
         }
 
-        /* Компактный сценарий */
         .scenario {
             background: rgba(255, 0, 102, 0.1);
             padding: 18px;
@@ -184,13 +176,13 @@
             min-height: 100px;
         }
 
-        /* Компактные выборы БЕЗ ПОДСКАЗОК */
         .choices {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
+        /* БЕЗ ЦВЕТНЫХ ПОДСКАЗОК - ВСЕ СЕРЫЕ */
         .choice {
             padding: 14px;
             background: rgba(255, 255, 255, 0.05);
@@ -204,12 +196,10 @@
 
         .choice:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-color: #888;
+            border-color: #999;
             transform: translateX(8px);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        /* Компактные результаты */
         .result-title {
             font-size: 32px;
             text-align: center;
@@ -255,7 +245,6 @@
             border: 1px solid #ff0066;
         }
 
-        /* Анимация тряски */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
@@ -266,50 +255,40 @@
             animation: shake 0.4s;
         }
 
-        /* Адаптивность */
         @media (max-width: 768px) {
             .top-bar {
                 flex-wrap: wrap;
                 gap: 8px;
                 justify-content: center;
             }
-
             .stat-mini {
                 font-size: 12px;
                 padding: 4px 8px;
             }
-
             .game-wrapper {
                 padding: 10px;
             }
-
             .game-container {
                 padding: 18px;
             }
-
             .menu-title {
                 font-size: 28px;
             }
-
             .scenario {
                 padding: 15px;
                 font-size: 14px;
             }
-
             .choice {
                 padding: 12px;
                 font-size: 13px;
             }
-
             .result-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
             }
-
             .result-box {
                 padding: 12px;
             }
-
             .result-box-value {
                 font-size: 24px;
             }
@@ -317,32 +296,20 @@
     </style>
 </head>
 <body>
-    <!-- Компактная верхняя панель -->
     <div class="top-bar">
-        <div class="stat-mini">
-            🎯 <span id="stat-level">1</span>
-        </div>
-        <div class="stat-mini">
-            ⭐ <span id="stat-score">0</span>
-        </div>
-        <div class="stat-mini">
-            💎 <span id="stat-decisions">0</span>
-        </div>
-        <div class="stat-mini">
-            😰 <span id="stat-anxiety">0%</span>
-        </div>
+        <div class="stat-mini">🎯 <span id="stat-level">1</span></div>
+        <div class="stat-mini">⭐ <span id="stat-score">0</span></div>
+        <div class="stat-mini">💎 <span id="stat-decisions">0</span></div>
+        <div class="stat-mini">😰 <span id="stat-anxiety">0%</span></div>
     </div>
 
-    <!-- Компактная шкала тревоги -->
     <div class="anxiety-mini">
         <div class="anxiety-fill" id="anxiety-fill"></div>
     </div>
 
-    <!-- Основной контент -->
     <div class="game-wrapper">
         <div class="game-container" id="main-container">
             
-            <!-- Экран меню -->
             <div class="screen active" id="menu-screen">
                 <h1 class="menu-title">🎭 ТЕНИ СОЗНАНИЯ</h1>
                 <p class="menu-subtitle">Психологический триллер</p>
@@ -355,7 +322,6 @@
                 <button class="btn btn-secondary" onclick="showRules()">📖 Правила</button>
             </div>
 
-            <!-- Экран игры -->
             <div class="screen" id="game-screen">
                 <div class="level-info">
                     <div class="level-number" id="level-display">Уровень 1</div>
@@ -364,12 +330,9 @@
                 <div class="scenario" id="scenario-text">
                     Загрузка сценария...
                 </div>
-                <div class="choices" id="choices-container">
-                    <!-- Выборы появятся здесь -->
-                </div>
+                <div class="choices" id="choices-container"></div>
             </div>
 
-            <!-- Экран результатов -->
             <div class="screen" id="result-screen">
                 <h2 class="result-title" id="result-title">Игра окончена</h2>
                 <div class="result-grid">
@@ -401,7 +364,6 @@
     </div>
 
     <script>
-        // Глобальные переменные
         let gameState = {
             level: 1,
             score: 0,
@@ -410,11 +372,9 @@
             currentScenario: 0
         };
 
-        // Сценарии игры
         const scenarios = [
             {
-                level: 1,
-                name: "Пробуждение",
+                level: 1, name: "Пробуждение",
                 text: "Вы просыпаетесь в незнакомой комнате. Стены покрыты странными символами. За окном густой туман. Телефон на столе мигает красным. Что вы сделаете?",
                 choices: [
                     { text: "📱 Проверить сообщения на телефоне", anxiety: 5, score: 15 },
@@ -424,8 +384,7 @@
                 ]
             },
             {
-                level: 2,
-                name: "Коридор теней",
+                level: 2, name: "Коридор теней",
                 text: "Бесконечный коридор. Тени на стенах движутся сами по себе. Слышны шаги позади, но когда оборачиваетесь - никого нет.",
                 choices: [
                     { text: "🏃 Побежать вперёд к свету", anxiety: 10, score: 20 },
@@ -435,8 +394,7 @@
                 ]
             },
             {
-                level: 3,
-                name: "Зеркальная комната",
+                level: 3, name: "Зеркальная комната",
                 text: "Комната полна зеркал. Ваше отражение улыбается, хотя вы этого не делаете. В другом зеркале видна совершенно другая комната.",
                 choices: [
                     { text: "👁️ Смотреть в глаза отражению", anxiety: 8, score: 25 },
@@ -446,8 +404,7 @@
                 ]
             },
             {
-                level: 4,
-                name: "Библиотека забытых слов",
+                level: 4, name: "Библиотека забытых слов",
                 text: "Бесконечные стеллажи с книгами без названий. Одна книга светится. На столе конверт с вашим именем.",
                 choices: [
                     { text: "📖 Открыть светящуюся книгу", anxiety: 11, score: 40 },
@@ -457,8 +414,7 @@
                 ]
             },
             {
-                level: 5,
-                name: "Лестница решений",
+                level: 5, name: "Лестница решений",
                 text: "Лестница вверх и вниз. Наверху свет и крики. Внизу тьма и тишина. Посередине дверь 'НЕ ОТКРЫВАТЬ'.",
                 choices: [
                     { text: "⬆️ Подняться к свету", anxiety: 9, score: 38 },
@@ -468,8 +424,7 @@
                 ]
             },
             {
-                level: 6,
-                name: "Комната выборов",
+                level: 6, name: "Комната выборов",
                 text: "Четыре двери: 'ИСТИНА', 'ЛОЖЬ', 'ЗАБВЕНИЕ' и одна без надписи, которая медленно открывается сама.",
                 choices: [
                     { text: "✨ Войти в дверь ИСТИНЫ", anxiety: 10, score: 55 },
@@ -479,8 +434,7 @@
                 ]
             },
             {
-                level: 7,
-                name: "Сад воспоминаний",
+                level: 7, name: "Сад воспоминаний",
                 text: "Прекрасный сад. Каждый цветок - живое воспоминание. Садовник предлагает выбрать, что сохранить.",
                 choices: [
                     { text: "🌹 Сохранить счастливые моменты", anxiety: -7, score: 42 },
@@ -490,8 +444,7 @@
                 ]
             },
             {
-                level: 8,
-                name: "Зал эмоций",
+                level: 8, name: "Зал эмоций",
                 text: "Гигантский зал, где эмоции стали физическими. Страх - чёрная масса. Радость - светящийся шар. Гнев - пламя. Печаль - туман.",
                 choices: [
                     { text: "😨 Обнять свой Страх", anxiety: 15, score: 70 },
@@ -501,8 +454,7 @@
                 ]
             },
             {
-                level: 9,
-                name: "Последний порог",
+                level: 9, name: "Последний порог",
                 text: "Финальная дверь. Голос шепчет: 'Останься, здесь безопасно'. Другой кричит: 'Беги!' Дверь закрывается.",
                 choices: [
                     { text: "🚪 Распахнуть дверь", anxiety: 12, score: 80 },
@@ -512,8 +464,7 @@
                 ]
             },
             {
-                level: 10,
-                name: "Пробуждение",
+                level: 10, name: "Пробуждение",
                 text: "Вы понимаете: всё это - ваш разум. Проснуться в реальности или остаться властелином внутреннего мира?",
                 choices: [
                     { text: "☀️ Проснуться в реальности", anxiety: 0, score: 100 },
@@ -524,37 +475,24 @@
             }
         ];
 
-        // Запуск игры
         function startGame() {
-            gameState = {
-                level: 1,
-                score: 0,
-                anxiety: 0,
-                decisions: 0,
-                currentScenario: 0
-            };
+            gameState = { level: 1, score: 0, anxiety: 0, decisions: 0, currentScenario: 0 };
             showScreen('game-screen');
             loadScenario();
             updateStats();
         }
 
-        // Загрузка сценария
         function loadScenario() {
             const scenario = scenarios[gameState.currentScenario];
-            
             if (!scenario) {
-                // Если сценариев больше нет - конец игры
                 endGame(false);
                 return;
             }
-
             document.getElementById('level-display').textContent = `Уровень ${scenario.level}`;
             document.getElementById('level-name').textContent = scenario.name;
             document.getElementById('scenario-text').textContent = scenario.text;
-
             const choicesContainer = document.getElementById('choices-container');
             choicesContainer.innerHTML = '';
-
             scenario.choices.forEach((choice, index) => {
                 setTimeout(() => {
                     const choiceDiv = document.createElement('div');
@@ -566,119 +504,75 @@
             });
         }
 
-        // Выбор игрока
         function makeChoice(choice) {
             gameState.score += choice.score;
             gameState.anxiety += choice.anxiety;
             gameState.decisions++;
-
             if (gameState.anxiety < 0) gameState.anxiety = 0;
             if (gameState.anxiety > 100) gameState.anxiety = 100;
-
             updateStats();
-
-            // Тряска для выборов с высокой тревогой
             if (choice.anxiety > 12) {
                 document.getElementById('main-container').classList.add('shake');
-                setTimeout(() => {
-                    document.getElementById('main-container').classList.remove('shake');
-                }, 400);
+                setTimeout(() => document.getElementById('main-container').classList.remove('shake'), 400);
             }
-
-            // Проверка критической тревоги
             if (gameState.anxiety >= 100) {
                 setTimeout(() => endGame(true), 800);
                 return;
             }
-
-            // Переход к следующему сценарию
             gameState.currentScenario++;
             gameState.level = gameState.currentScenario + 1;
+            if (gameState.currentScenario >= scenarios.length) {
+                setTimeout(() => endGame(false), 800);
+            } else {
+                setTimeout(() => loadScenario(), 800);
+            }
+        }
 
-            // ИСПРАВЛЕНО: Проверкаd('stat-decisions').textContent = gameState.decisions;
-            
+        function updateStats() {
+            document.getElementById('stat-level').textContent = gameState.level;
+            document.getElementById('stat-score').textContent = gameState.score;
+            document.getElementById('stat-decisions').textContent = gameState.decisions;
             const anxietyPercent = Math.round(gameState.anxiety);
             document.getElementById('stat-anxiety').textContent = anxietyPercent + '%';
             document.getElementById('anxiety-fill').style.width = anxietyPercent + '%';
         }
 
-        // Конец игры
         function endGame(anxietyOverload = false) {
             let title, message;
-
             if (anxietyOverload) {
                 title = '😰 ПОГЛОЩЁН СТРАХОМ';
-                message = 'Уровень тревоги достиг критической отметки. Ваш разум не выдержал испытания. Следите за шкалой тревоги и выбирайте более безопасные пути!';
+                message = 'Уровень тревоги достиг критической отметки. Ваш разум не выдержал испытания.';
             } else if (gameState.score >= 800) {
                 title = '🏆 АБСОЛЮТНЫЙ МАСТЕР';
-                message = 'Невероятно! Вы прошли все 10 уровней с исключительным мастерством. Ваша психика непоколебима, решения безупречны. Вы достигли полного просветления!';
+                message = 'Невероятно! Вы прошли все 10 уровней с исключительным мастерством!';
             } else if (gameState.score >= 600) {
                 title = '⭐ ПОБЕДИТЕЛЬ';
-                message = 'Великолепный результат! Вы успешно преодолели все 10 уровней лабиринта сознания. Баланс между риском и осторожностью привёл вас к победе!';
+                message = 'Великолепный результат! Вы успешно преодолели все 10 уровней лабиринта сознания!';
             } else if (gameState.score >= 400) {
                 title = '🎭 ВЫЖИВШИЙ';
-                message = 'Вы прошли все 10 уровней, но путь был непростым. Некоторые страхи всё ещё преследуют вас. Можно сыграть лучше!';
+                message = 'Вы прошли все 10 уровней, но путь был непростым.';
             } else {
                 title = '🌫️ ЗАВЕРШЕНО';
-                message = 'Вы прошли путь до конца! Лабиринт разума был сложным, но вы не сдались. Каждая попытка делает вас сильнее!';
+                message = 'Вы прошли путь до конца! Каждая попытка делает вас сильнее!';
             }
-
             document.getElementById('result-title').textContent = title;
             document.getElementById('result-message').textContent = message;
             document.getElementById('final-score').textContent = gameState.score;
-            document.getElementById('final-level').textContent = gameState.level - 1; // -1 потому что уровень увеличился после последнего выбора
+            document.getElementById('final-level').textContent = 10;
             document.getElementById('final-decisions').textContent = gameState.decisions;
             document.getElementById('final-anxiety').textContent = Math.round(gameState.anxiety) + '%';
-
             showScreen('result-screen');
         }
 
-        // Переключение экранов
         function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
+            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
-        // Перезапуск
-        function restartGame() {
-            startGame();
-        }
-
-        // Возврат в меню
-        function backToMenu() {
-            showScreen('menu-screen');
-        }
-
-        // Правила
+        function restartGame() { startGame(); }
+        function backToMenu() { showScreen('menu-screen'); }
         function showRules() {
-            alert(`🎮 ПРАВИЛА "ТЕНИ СОЗНАНИЯ"
-
-📊 ЦЕЛЬ: Пройти все 10 уровней
-
-😰 ТРЕВОГА:
-• При 100% тревоги - игра окончена!
-• Следите за шкалой тревоги сверху
-• Некоторые выборы СНИЖАЮТ тревогу
-• Некоторые ПОВЫШАЮТ
-
-⭐ БАЛЛЫ:
-• Чем опаснее выбор - тем больше баллов
-• Но и тревоги тоже больше!
-
-💡 СТРАТЕГИЯ:
-• Балансируйте между риском и безопасностью
-• Угадывайте последствия по тексту выбора
-• Нет цветовых подсказок - решайте сами!
-• Думайте над каждым выбором
-
-🏆 ПОБЕДА:
-• Пройдите все 10 уровней
-• Наберите максимум баллов
-• Сохраните рассудок (тревога < 100%)
-
-Удачи в путешествии по глубинам разума!`);
+            alert(`🎮 ПРАВИЛА "ТЕНИ СОЗНАНИЯ"\n\n📊 ЦЕЛЬ: Пройти все 10 уровней\n\n😰 ТРЕВОГА:\n• При 100% тревоги - игра окончена!\n• Некоторые выборы СНИЖАЮТ тревогу\n• Некоторые ПОВЫШАЮТ\n\n⭐ БАЛЛЫ:\n• Чем опаснее выбор - тем больше баллов\n\n💡 СТРАТЕГИЯ:\n• Балансируйте между риском и безопасностью\n• Угадывайте последствия по тексту\n• НЕТ цветовых подсказок!`);
         }
     </script>
 </body>
