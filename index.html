@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Тени Сознания | Психологическая игра</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #000;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            touch-action: manipulation;
+        }
+
+        /* Анимированный фон */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e, #0a0a0a);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Частицы страха */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 0, 102, 0.5);
+            border-radius: 50%;
+            animation: float 10s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { 
+                transform: translateY(-100vh) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        /* Контейнер игры */
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        /* Верхняя панель статистики */
+        #top-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 2px solid #ff0066;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(26, 26, 46, 0.8);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #444;
+            font-size: 0.9em;
+            flex: 1;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .stat-icon {
+            font-size: 1.2em;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        /* Шкала тревоги */
+        .anxiety-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .anxiety-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #ffaa00, #ff0066, #ff0000);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* Основной контент */
+        #content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Экраны */
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Главное меню */
+        #menu-screen {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            border: 2px solid #ff0066;
+            box-shadow: 0 0 30px rgba(255, 0, 102, 0.3);
+        }
+
+        .game-title {
+            font-size: clamp(1.8em, 5vw, 3em);
+            color: #ff0066;
+            text-shadow: 0 0 20px #ff0066;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        .game-subtitle {
+            font-size: clamp(0.9em, 3vw, 1.2em);
+            color: #999;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .menu-description {
+            font-size: clamp(0.8em, 2.5vw, 1em);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #ccc;
+            padding: 15px;
+            background: rgba(255, 0, 102, 0.1);
+            border-radius: 10px;
+        }
+
+        /* Кнопки */
+        .btn {
+            width: 100%;
+            padding: 15px 30px;
+            font-size: clamp(1em, 3vw, 1.2em);
+            background: linear-gradient(135deg, #ff0066, #ff3388);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(255, 0, 102, 0.4);
+            touch-action: manipulation;
+        }
+
+        .btn:hover, .btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(255, 0, 102, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #444, #666);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-secondary:hover, .btn-secondary:active {
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Игровой экран */
+        #game-screen {
+            padding: 20px;
+        }
+
+        .level-indicator {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            border: 2px solid #00ff88;
+        }
+
+        .level-title {
+            font-size: clamp(1.2em, 4vw, 1.8em);
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .level-subtitle {
+            font-size: clamp(0.8em, 2.5vw, 1em);
+            color: #999;
+        }
+
+        /* Сценарий */
+        .scenario-box {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #ff0066;
+            margin-bottom: 25px;
+            min-height: 150px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .scenario-text {
+            font-size: clamp(1em, 3vw, 1.2em);
+            line-height: 1.8;
+            color: #e0e0e0;
+            animation: typeIn 1s ease;
+        }
+
+        @keyframes typeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Выборы */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice {
+            padding: 18px;
+            background: rgba(30, 30, 30, 0.9);
+            border: 2px solid #555;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: clamp(0.9em, 2.5vw, 1.1em);
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .choice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .choice:hover::before, .choice:active::before {
+            left: 100%;
+        }
+
+        .choice:hover, .choice:active {
+            background: rgba(50, 50, 50, 0.9);
+            border-color: #00ff88;
+            transform: translateX(5px);
+        }
+
+        .choice.dangerous:hover, .choice.dangerous:active {
+            border-color: #ff0066;
+            box-shadow: 0 0 15px rgba(255, 0, 102, 0.5);
+        }
+
+        .choice-icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        /* Результаты */
+        #result-screen {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 15px;
+        }
+
+        .result-title {
+            font-size: clamp(1.5em, 5vw, 2.5em);
+            margin-bottom: 20px;
+            color: #ff0066;
+            text-shadow: 0 0 20px #ff0066;
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .result-stat {
+            padding: 20px;
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 10px;
+            border: 2px solid #444;
+        }
+
+        .result-stat-value {
+            font-size: clamp(1.8em, 5vw, 2.5em);
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .result-stat-label {
+            font-size: clamp(0.8em, 2.5vw, 1em);
+            color: #999;
+        }
+
+        .result-message {
+            font-size: clamp(1em, 3vw, 1.3em);
+            line-height: 1.8;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255, 0, 102, 0.1);
+            border-radius: 10px;
+            border: 1px solid #ff0066;
+        }
+
+        /* Эффект тряски */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        /* Эффект затемнения */
+        .darken {
+            animation: darken 0.3s ease;
+        }
+
+        @keyframes darken {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(0.3); }
+            100% { filter: brightness(1); }
+        }
+
+        /* Мобильная оптимизация */
+        @media (max-width: 768px) {
+            #top-bar {
+                padding: 8px 10px;
+            }
+
+            .stat-box {
+                padding: 6px 10px;
+                font-size: 0.8em;
+                min-width: 80px;
+            }
+
+            #content {
+                padding: 15px;
+            }
+
+            .scenario-box {
+                padding: 18px;
+                min-height: 120px;
+            }
+
+            .choice {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-box {
+                flex: 1 1 calc(50% - 10px);
+            }
+        }
+
+        /* Ландшафтная ориентация на мобильных */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #content {
+                padding: 10px;
+            }
+
+            .scenario-box {
+                padding: 15px;
+                min-height: 80px;
+            }
+
+            .level-indicator {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .choices {
+                gap: 10px;
+            }
+
+            .choice {
+                padding: 12px;
+            }
+        }
+
+        /* Пульсирующее свечение для критических моментов */
+        .critical-glow {
+            animation: criticalGlow 1s infinite;
+        }
+
+        @keyframes criticalGlow {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(255, 0, 0, 0.9);
+            }
+        }
+
+        /* Загрузка */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Достижения */
+        .achievement-popup {
+            position: fixed;
+            top: 80px;
+            right: -350px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #00ff88;
+            z-index: 1000;
+            transition: right 0.5s ease;
+            max-width: 300px;
+        }
+
+        .achievement-popup.show {
+            right: 20px;
+        }
+
+        .achievement-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .achievement-title {
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .achievement-text {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        /* Прогресс уровня */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0066, #00ff88);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div id="game-container">
+        <!-- Верхняя панель статистики -->
+        <div id="top-bar">
+            <div class="stat-box">
+                <span class="stat-icon">🎯</span>
+                <span>Уровень: <span class="stat-value" id="current-level">1</span></span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-icon">⭐</span>
+                <span>Баллы: <span class="stat-value" id="score">0</span></span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-icon">💎</span>
+                <span>Решений: <span class="stat-value" id="decisions">0</span></span>
+            </div>
+        </div>
+        
+        <!-- Шкала тревоги -->
+        <div class="anxiety-bar">
+            <div class="anxiety-fill" id="anxiety-fill" style="width: 0%"></div>
+        </div>
+
+        <!-- Основной контент -->
+        <div id="content">
+            <!-- Главное меню -->
+            <div id="menu-screen" class="screen active">
+                <h1 class="game-title">🎭 ТЕНИ СОЗНАНИЯ</h1>
+                <p class="game-subtitle">Психологический триллер</p>
+                <div class="menu-description">
+                    Погрузитесь в мир внутренних страхов и противоречий. 
+                    Каждое решение имеет последствия. Каждый выбор меняет вас.
+                    Сможете ли вы сохранить рассудок в лабиринте собственного разума?
+                </div>
+                <button class="btn" onclick="game.startGame()">
+                    🎮 Начать игру
+                </button>
+                <button class="btn btn-secondary" onclick="game.showRules()">
+                    📖 Правила игры
+                </button>
+                <button class="btn btn-secondary" onclick="game.showStats()">
+                    📊 Статистика
+                </button>
+            </div>
+
+            <!-- Игровой экран -->
+            <div id="game-screen" class="screen">
+                <div class="level-indicator">
+                    <div class="level-title" id="level-title">Уровень 1</div>
+                    <div class="level-subtitle" id="level-subtitle">Пробуждение</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="scenario-box">
+                    <div class="scenario-text" id="scenario-text">
+                        Загрузка сценария...
+                    </div>
+                </div>
+
+                <div class="choices" id="choices">
+                    <!-- Выборы добавляются динамически -->
+                </div>
+            </div>
+
+            <!-- Экран результатов -->
+            <div id="result-screen" class="screen">
+                <h2 class="result-title" id="result-title">Конец игры</h2>
+                
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="final-score">0</div>
+                        <div class="result-stat-label">Баллов</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="final-level">0</div>
+                        <div class="result-stat-label">Уровней</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="final-decisions">0</div>
+                        <div class="result-stat-label">Решений</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="final-anxiety">0%</div>
+                        <div class="result-stat-label">Тревоги</div>
+                    </div>
+                </div>
+
+                <div class="result-message" id="result-message">
+                    Ваш результат...
+                </div>
+
+                <button class="btn" onclick="game.restartGame()">
+                    🔄 Играть снова
+                </button>
+                <button class="btn btn-secondary" onclick="game.backToMenu()">
+                    🏠 В меню
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Всплывающее окно достижений -->
+    <div class="achievement-popup" id="achievement-popup">
+        <div class="achievement-icon" id="achievement-icon">🏆</div>
+        <div class="achievement-title" id="achievement-title">Достижение!</div>
+        <div class="achievement-text" id="achievement-text"></div>
+    </div>
+
+    <script>
+        // Главный объект игры
+        const game = {
+            // Состояние игры
+            state: {
+                currentLevel: 1,
+                score: 0,
+                anxiety: 0,
+                decisions: 0,
+                currentScenarioIndex: 0,
+                gameActive: false,
+                maxLevels: 10
+            },
+
+            // База сценариев
+            scenarios: [
+                // Уровень 1: Пробуждение
+                {
+                    level: 1,
+                    title: "Пробуждение",
+                    subtitle: "Туманное утро",
+                    text: "Вы просыпаетесь в незнакомой комнате. Стены покрыты странными символами. За окном густой туман. Телефон на столе мигает тревожными сообщениями. Что вы сделаете?",
+                    choices: [
+                        { text: "📱 Проверить сообщения", anxiety: 10, score: 10, icon: "📱" },
+                        { text: "🚪 Немедленно выйти из комнаты", anxiety: 20, score: 5, icon: "🚪", dangerous: true },
+                        { text: "🔍 Изучить символы на стенах", anxiety: 5, score: 20, icon: "🔍" },
+                        { text: "🪟 Посмотреть в окно", anxiety: 15, score: 15, icon: "🪟" }
+                    ]
+                },
+                // Уровень 2: Коридор теней
+                {
+                    level: 2,
+                    title: "Коридор теней",
+                    subtitle: "Тени на стенах",
+                    text: "Вы оказываетесь в бесконечном коридоре. На стенах пляшут странные тени, хотя источника света не видно. Слышны шаги... или это эхо ваших собственных?",
+                    choices: [
+                        { text: "🏃 Побежать вперёд", anxiety: 25, score: 10, icon: "🏃", dangerous: true },
+                        { text: "🕯️ Зажечь спичку", anxiety: 10, score: 25, icon: "🕯️" },
+                        { text: "👂 Прислушаться к звукам", anxiety: 15, score: 20, icon: "👂" },
+                        { text: "🤚 Коснуться тени", anxiety: 30, score: 30, icon: "🤚", dangerous: true }
+                    ]
+                },
+                // Уровень 3: Зеркальная комната
+                {
+                    level: 3,
+                    title: "Зеркальная комната",
+                    subtitle: "Множество отражений",
+                    text: "Комната полна зеркал. Ваше отражение странно улыбается, хотя вы этого не делаете. Одно из отражений показывает другое место...",
+                    choices: [
+                        { text: "👁️ Смотреть в своё отражение", anxiety: 20, score: 15, icon: "👁️" },
+                        { text: "🔨 Разбить ближайшее зеркало", anxiety: 35, score: 25, icon: "🔨", dangerous: true },
+                        { text: "🚶 Идти к странному отражению", anxiety: 25, score: 30, icon: "🚶" },
+                        { text: "🙈 Закрыть глаза и идти наощупь", anxiety: 40, score: 40, icon: "🙈", dangerous: true }
+                    ]
+                },
+                // Уровень 4: Библиотека забытых слов
+                {
+                    level: 4,
+                    title: "Библиотека",
+                    subtitle: "Книги без названий",
+                    text: "Вы в огромной библиотеке. Книги написаны на неизвестном языке. Одна книга светится в темноте. На столе лежит письмо с вашим именем...",
+                    choices: [
+                        { text: "📖 Открыть светящуюся книгу", anxiety: 30, score: 35, icon: "📖", dangerous: true },
+                        { text: "✉️ Прочитать письмо", anxiety: 15, score: 20, icon: "✉️" },
+                        { text: "🔦 Искать выход с фонарём", anxiety: 20, score: 25, icon: "🔦" },
+                        { text: "🪑 Сесть и подождать", anxiety: 10, score: 15, icon: "🪑" }
+                    ]
+                },
+                // Уровень 5: Лестница решений
+                {
+                    level: 5,
+                    title: "Лестница",
+                    subtitle: "Вверх или вниз?",
+                    text: "Перед вами лестница. Вверх ведёт к свету, но слышны крики. Вниз - абсолютная темнота и тишина. Посередине дверь с надписью 'Не открывать'.",
+                    choices: [
+                        { text: "⬆️ Подняться к свету", anxiety: 25, score: 30, icon: "⬆️" },
+                        { text: "⬇️ Спуститься в темноту", anxiety: 40, score: 40, icon: "⬇️", dangerous: true },
+                        { text: "🚪 Открыть запретную дверь", anxiety: 50, score: 50, icon: "🚪", dangerous: true },
+                        { text: "🧘 Остаться на месте и медитировать", anxiety: -10, score: 20, icon: "🧘" }
+                    ]
+                },
+                // Уровень 6: Комната выборов
+                {
+                    level: 6,
+                    title: "Выбор",
+                    subtitle: "Цена решений",
+                    text: "Вы в комнате с тремя дверями. Над первой написано 'Истина', над второй 'Ложь', над третьей 'Забвение'. Четвёртая дверь без надписи медленно открывается...",
+                    choices: [
+                        { text: "✨ Истина", anxiety: 30, score: 45, icon: "✨" },
+                        { text: "🎭 Ложь", anxiety: 25, score: 35, icon: "🎭" },
+                        { text: "🌫️ Забвение", anxiety: 20, score: 25, icon: "🌫️" },
+                        { text: "❓ Войти в открывающуюся дверь", anxiety: 45, score: 55, icon: "❓", dangerous: true }
+                    ]
+                },
+                // Уровень 7: Сад памяти
+                {
+                    level: 7,
+                    title: "Сад памяти",
+                    subtitle: "Что было реальным?",
+                    text: "Вы в прекрасном саду. Каждый цветок - это ваше воспоминание. Некоторые цветы увядают. Садовник предлагает вам выбрать, какие воспоминания сохранить...",
+                    choices: [
+                        { text: "🌹 Сохранить счастливые моменты", anxiety: 15, score: 30, icon: "🌹" },
+                        { text: "🥀 Сохранить болезненные уроки", anxiety: 35, score: 50, icon: "🥀", dangerous: true },
+                        { text: "🌺 Создать новые воспоминания", anxiety: 25, score: 40, icon: "🌺" },
+                        { text: "🔥 Сжечь все воспоминания", anxiety: 55, score: 60, icon: "🔥", dangerous: true }
+                    ]
+                },
+                // Уровень 8: З
