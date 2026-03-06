@@ -1,579 +1,1078 @@
+cat > yulia-psychologist/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тени Сознания</title>
+    <title>Юлия — Психолог, Сексолог, Телесный терапевт</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --cream: #F5F0EB;
+            --warm-beige: #E8DDD3;
+            --soft-brown: #C4A882;
+            --dark-brown: #5C4A3A;
+            --charcoal: #2C2C2C;
+            --white: #FFFFFF;
+            --accent: #8B7355;
+            --light-sage: #E8EDE5;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f3460 100%);
-            color: #fff;
-            min-height: 100vh;
-            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream);
+            color: var(--charcoal);
+            line-height: 1.7;
             overflow-x: hidden;
         }
 
-        .top-bar {
-            background: rgba(0, 0, 0, 0.9);
-            padding: 8px 15px;
+        /* ===== НАВИГАЦИЯ ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(245, 240, 235, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 15px 0;
+            transition: box-shadow 0.3s ease;
+        }
+
+        nav.scrolled {
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #ff0066;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            padding: 0 30px;
         }
 
-        .stat-mini {
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-brown);
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1.5px;
+            background: var(--soft-brown);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .burger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .burger span {
+            width: 25px;
+            height: 2px;
+            background: var(--dark-brown);
+            transition: 0.3s;
+        }
+
+        /* ===== HERO СЕКЦИЯ ===== */
+        .hero {
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            padding: 5px 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            border: 1px solid #444;
-        }
-
-        .stat-mini span {
-            color: #00ff88;
-            font-weight: bold;
-            margin-left: 3px;
-        }
-
-        .anxiety-mini {
-            height: 6px;
-            background: rgba(0, 0, 0, 0.8);
-            border-bottom: 1px solid #ff6600;
-        }
-
-        .anxiety-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff88, #ffaa00, #ff6600, #ff0000);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .game-wrapper {
-            max-width: 800px;
+            padding: 120px 30px 80px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 15px;
         }
 
-        .game-container {
-            background: rgba(0, 0, 0, 0.85);
-            border-radius: 15px;
-            padding: 25px;
-            border: 2px solid #ff0066;
-            box-shadow: 0 0 30px rgba(255, 0, 102, 0.4);
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .menu-title {
-            font-size: 36px;
-            text-align: center;
-            color: #ff0066;
-            text-shadow: 0 0 20px #ff0066;
-            margin-bottom: 10px;
-        }
-
-        .menu-subtitle {
-            text-align: center;
-            font-size: 16px;
-            color: #aaa;
-            margin-bottom: 20px;
-        }
-
-        .menu-description {
-            text-align: center;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            color: #ccc;
-            font-size: 14px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            font-size: 15px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 8px 0;
-            transition: all 0.3s;
-            text-transform: uppercase;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #ff0066, #ff3388);
-            color: white;
-            box-shadow: 0 4px 15px rgba(255, 0, 102, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 0, 102, 0.6);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #444, #666);
-            color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-        }
-
-        .level-info {
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 12px;
-            background: rgba(0, 255, 136, 0.1);
-            border-radius: 8px;
-            border: 1px solid #00ff88;
-        }
-
-        .level-number {
-            font-size: 20px;
-            color: #00ff88;
-            margin-bottom: 3px;
-        }
-
-        .level-name {
-            font-size: 14px;
-            color: #aaa;
-        }
-
-        .scenario {
-            background: rgba(255, 0, 102, 0.1);
-            padding: 18px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border-left: 3px solid #ff0066;
-            line-height: 1.6;
-            font-size: 15px;
-            min-height: 100px;
-        }
-
-        .choices {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        /* БЕЗ ЦВЕТНЫХ ПОДСКАЗОК - ВСЕ СЕРЫЕ */
-        .choice {
-            padding: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #555;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-            text-align: left;
-        }
-
-        .choice:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: #999;
-            transform: translateX(8px);
-        }
-
-        .result-title {
-            font-size: 32px;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #ff0066;
-            text-shadow: 0 0 15px #ff0066;
-        }
-
-        .result-grid {
+        .hero-content {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin: 20px 0;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            width: 100%;
         }
 
-        .result-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 10px;
+        .hero-text {
+            animation: fadeInLeft 1s ease;
+        }
+
+        .hero-greeting {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--soft-brown);
+            font-style: italic;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .hero-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+
+        .hero-title {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-desc {
+            font-size: 1rem;
+            color: #6B5E52;
+            line-height: 1.8;
+            margin-bottom: 35px;
+            max-width: 480px;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--dark-brown);
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            border: 2px solid var(--dark-brown);
+        }
+
+        .hero-btn:hover {
+            background: transparent;
+            color: var(--dark-brown);
+        }
+
+        .hero-photo {
+            display: flex;
+            justify-content: center;
+            animation: fadeInRight 1s ease;
+        }
+
+        .hero-photo img {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(92, 74, 58, 0.15);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .stat-item {
             text-align: center;
-            border: 1px solid #444;
         }
 
-        .result-box-value {
-            font-size: 28px;
-            color: #00ff88;
-            font-weight: bold;
-            margin-bottom: 5px;
+        .stat-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--dark-brown);
         }
 
-        .result-box-label {
-            font-size: 11px;
-            color: #aaa;
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--accent);
+            letter-spacing: 0.5px;
         }
 
-        .result-message {
-            background: rgba(255, 0, 102, 0.1);
+        /* ===== ОБЩИЕ СТИЛИ СЕКЦИЙ ===== */
+        section {
+            padding: 80px 30px;
+        }
+
+        .section-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--dark-brown);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-bottom: 50px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+        }
+
+        .divider {
+            width: 60px;
+            height: 1.5px;
+            background: var(--soft-brown);
+            margin: 20px auto 25px;
+        }
+
+        /* ===== О СЕБЕ ===== */
+        .about {
+            background: var(--white);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+
+        .about-text p {
+            margin-bottom: 18px;
+            color: #5A5048;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .about-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .about-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--warm-beige);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #5A5048;
+            font-size: 0.95rem;
+        }
+
+        .about-list li::before {
+            content: '◆';
+            color: var(--soft-brown);
+            font-size: 0.6rem;
+        }
+
+        /* ===== УСЛУГИ ===== */
+        .services {
+            background: var(--cream);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 40px 30px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(92, 74, 58, 0.1);
+            border-color: var(--warm-beige);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .service-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            color: var(--dark-brown);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .service-card p {
+            color: #6B5E52;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* ===== ОТЗЫВЫ ===== */
+        .reviews {
+            background: var(--white);
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .review-card {
+            background: var(--cream);
+            padding: 35px 30px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .review-card::before {
+            content: '"';
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            color: var(--soft-brown);
+            position: absolute;
+            top: 10px;
+            left: 25px;
+            opacity: 0.4;
+        }
+
+        .review-text {
+            font-size: 0.9rem;
+            color: #5A5048;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+            padding-top: 15px;
+        }
+
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .review-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--soft-brown);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .review-name {
+            font-weight: 500;
+            color: var(--dark-brown);
+            font-size: 0.9rem;
+        }
+
+        .review-stars {
+            color: var(--soft-brown);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+        }
+
+        /* ===== КОНТАКТЫ ===== */
+        .contact {
+            background: var(--cream);
+        }
+
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+
+        .contact-info {
+            padding: 20px 0;
+        }
+
+        .contact-info h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: var(--dark-brown);
+            margin-bottom: 20px;
+        }
+
+        .contact-info p {
+            color: #6B5E52;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .contact-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--warm-beige);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .contact-item-text {
+            font-size: 0.95rem;
+            color: #5A5048;
+        }
+
+        .contact-item-text a {
+            color: var(--dark-brown);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-item-text a:hover {
+            color: var(--soft-brown);
+        }
+
+        .contact-form {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(92, 74, 58, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark-brown);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid var(--warm-beige);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            background: var(--cream);
+            color: var(--charcoal);
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--soft-brown);
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            width: 100%;
             padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            line-height: 1.6;
-            font-size: 14px;
-            border: 1px solid #ff0066;
+            background: var(--dark-brown);
+            color: var(--white);
+            border: 2px solid var(--dark-brown);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 6px;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+        .form-submit:hover {
+            background: transparent;
+            color: var(--dark-brown);
         }
 
-        .shake {
-            animation: shake 0.4s;
+        /* ===== SOCIAL LINKS ===== */
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
         }
 
-        @media (max-width: 768px) {
-            .top-bar {
-                flex-wrap: wrap;
-                gap: 8px;
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--warm-beige);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--dark-brown);
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: var(--dark-brown);
+            color: var(--white);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--dark-brown);
+            color: var(--warm-beige);
+            text-align: center;
+            padding: 30px;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--soft-brown);
+            text-decoration: none;
+        }
+
+        /* ===== АНИМАЦИИ ===== */
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
+        @media (max-width: 900px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text {
+                order: 2;
+            }
+
+            .hero-photo {
+                order: 1;
+            }
+
+            .hero-photo img {
+                max-width: 320px;
+            }
+
+            .hero-desc {
+                margin: 0 auto 35px;
+            }
+
+            .hero-stats {
                 justify-content: center;
             }
-            .stat-mini {
-                font-size: 12px;
-                padding: 4px 8px;
+
+            .hero-name {
+                font-size: 2.8rem;
             }
-            .game-wrapper {
-                padding: 10px;
+
+            .about-content {
+                grid-template-columns: 1fr;
             }
-            .game-container {
-                padding: 18px;
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                margin: 0 auto;
             }
-            .menu-title {
-                font-size: 28px;
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                margin: 0 auto;
             }
-            .scenario {
-                padding: 15px;
-                font-size: 14px;
+
+            .contact-wrapper {
+                grid-template-columns: 1fr;
             }
-            .choice {
-                padding: 12px;
-                font-size: 13px;
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: rgba(245, 240, 235, 0.98);
+                flex-direction: column;
+                padding: 20px 30px;
+                gap: 15px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             }
-            .result-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
+
+            .nav-links.active {
+                display: flex;
             }
-            .result-box {
-                padding: 12px;
+
+            .burger {
+                display: flex;
             }
-            .result-box-value {
-                font-size: 24px;
+        }
+
+        @media (max-width: 480px) {
+            .hero-name {
+                font-size: 2.2rem;
             }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .hero-stats {
+                gap: 25px;
+            }
+
+            .contact-form {
+                padding: 25px;
+            }
+        }
+
+        /* Уведомление об отправке */
+        .form-success {
+            display: none;
+            background: var(--light-sage);
+            color: var(--dark-brown);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .form-success.show {
+            display: block;
+            animation: fadeInUp 0.4s ease;
         }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="stat-mini">🎯 <span id="stat-level">1</span></div>
-        <div class="stat-mini">⭐ <span id="stat-score">0</span></div>
-        <div class="stat-mini">💎 <span id="stat-decisions">0</span></div>
-        <div class="stat-mini">😰 <span id="stat-anxiety">0%</span></div>
-    </div>
 
-    <div class="anxiety-mini">
-        <div class="anxiety-fill" id="anxiety-fill"></div>
-    </div>
-
-    <div class="game-wrapper">
-        <div class="game-container" id="main-container">
-            
-            <div class="screen active" id="menu-screen">
-                <h1 class="menu-title">🎭 ТЕНИ СОЗНАНИЯ</h1>
-                <p class="menu-subtitle">Психологический триллер</p>
-                <p class="menu-description">
-                    Погрузитесь в мир внутренних страхов и противоречий. 
-                    Каждое решение имеет последствия.
-                    Сможете ли вы сохранить рассудок?
-                </p>
-                <button class="btn btn-primary" onclick="startGame()">▶ Начать игру</button>
-                <button class="btn btn-secondary" onclick="showRules()">📖 Правила</button>
+    <!-- НАВИГАЦИЯ -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">Юлия</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about" onclick="closeMenu()">Обо мне</a></li>
+                <li><a href="#services" onclick="closeMenu()">Услуги</a></li>
+                <li><a href="#reviews" onclick="closeMenu()">Отзывы</a></li>
+                <li><a href="#contact" onclick="closeMenu()">Контакты</a></li>
+            </ul>
+            <div class="burger" id="burger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
-
-            <div class="screen" id="game-screen">
-                <div class="level-info">
-                    <div class="level-number" id="level-display">Уровень 1</div>
-                    <div class="level-name" id="level-name">Пробуждение</div>
-                </div>
-                <div class="scenario" id="scenario-text">
-                    Загрузка сценария...
-                </div>
-                <div class="choices" id="choices-container"></div>
-            </div>
-
-            <div class="screen" id="result-screen">
-                <h2 class="result-title" id="result-title">Игра окончена</h2>
-                <div class="result-grid">
-                    <div class="result-box">
-                        <div class="result-box-value" id="final-score">0</div>
-                        <div class="result-box-label">Баллов</div>
-                    </div>
-                    <div class="result-box">
-                        <div class="result-box-value" id="final-level">0</div>
-                        <div class="result-box-label">Уровней</div>
-                    </div>
-                    <div class="result-box">
-                        <div class="result-box-value" id="final-decisions">0</div>
-                        <div class="result-box-label">Решений</div>
-                    </div>
-                    <div class="result-box">
-                        <div class="result-box-value" id="final-anxiety">0%</div>
-                        <div class="result-box-label">Тревоги</div>
-                    </div>
-                </div>
-                <div class="result-message" id="result-message">
-                    Ваш путь завершён...
-                </div>
-                <button class="btn btn-primary" onclick="restartGame()">🔄 Играть снова</button>
-                <button class="btn btn-secondary" onclick="backToMenu()">🏠 В меню</button>
-            </div>
-
         </div>
-    </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-greeting">Добро пожаловать</div>
+                <h1 class="hero-name">Юлия</h1>
+                <div class="hero-title">Психолог · Сексолог · Телесный терапевт</div>
+                <p class="hero-desc">
+                    Помогаю вернуть гармонию в отношения с собой и партнёром. 
+                    Бережный подход, конфиденциальность и профессиональная поддержка на каждом этапе вашего пути.
+                </p>
+                <a href="#contact" class="hero-btn">Записаться на консультацию</a>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">7+</div>
+                        <div class="stat-label">лет опыта</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1000+</div>
+                        <div class="stat-label">консультаций</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">клиентов</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-photo">
+                <img src="photo.jpg" alt="Юлия — Психолог, Сексолог, Телесный терапевт">
+            </div>
+        </div>
+    </section>
+
+    <!-- О СЕБЕ -->
+    <section class="about" id="about">
+        <div class="section-container fade-in">
+            <h2 class="section-title">Обо мне</h2>
+            <div class="divider"></div>
+            <p class="section-subtitle">Профессиональный путь и подход к работе</p>
+            
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        Здравствуйте! Меня зовут Юлия, и уже более 7 лет я помогаю людям обрести 
+                        внутреннюю гармонию, разобраться в отношениях и вернуть радость жизни.
+                    </p>
+                    <p>
+                        Мой подход объединяет классическую психологию, сексологию и телесную терапию. 
+                        Я убеждена, что тело и психика неразрывно связаны, и работа с обоими уровнями 
+                        даёт наиболее глубокие и устойчивые результаты.
+                    </p>
+                    <p>
+                        Каждый человек уникален, поэтому я подбираю индивидуальную стратегию работы, 
+                        учитывая ваши особенности, запрос и темп. В основе моей работы — безоценочность, 
+                        уважение и полная конфиденциальность.
+                    </p>
+                </div>
+                <div>
+                    <ul class="about-list">
+                        <li>Высшее психологическое образование</li>
+                        <li>Сертифицированный сексолог</li>
+                        <li>Телесно-ориентированная психотерапия</li>
+                        <li>Работа с парами и индивидуально</li>
+                        <li>Онлайн и очные консультации</li>
+                        <li>Регулярное повышение квалификации</li>
+                        <li>Супервизия и личная терапия</li>
+                        <li>Опыт работы более 7 лет</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- УСЛУГИ -->
+    <section class="services" id="services">
+        <div class="section-container fade-in">
+            <h2 class="section-title">Чем могу помочь</h2>
+            <div class="divider"></div>
+            <p class="section-subtitle">Направления моей работы</p>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🧠</div>
+                    <h3>Психологическое консультирование</h3>
+                    <p>Тревожность, депрессия, самооценка, жизненные кризисы, эмоциональное выгорание, поиск себя и своих ресурсов.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💕</div>
+                    <h3>Сексология</h3>
+                    <p>Сексуальные дисфункции, снижение влечения, проблемы в интимной жизни, сексуальное образование и раскрытие чувственности.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🤲</div>
+                    <h3>Телесная терапия</h3>
+                    <p>Работа с телесными зажимами, психосоматикой, восстановление контакта с телом, снятие хронического напряжения.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">👫</div>
+                    <h3>Парная терапия</h3>
+                    <p>Кризисы в отношениях, восстановление доверия, улучшение коммуникации, работа с конфликтами в паре.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🌱</div>
+                    <h3>Личностный рост</h3>
+                    <p>Раскрытие потенциала, построение границ, развитие уверенности, работа с убеждениями и установками.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💻</div>
+                    <h3>Онлайн-консультации</h3>
+                    <p>Полноценные сессии в удобном для вас формате из любой точки мира. Такой же эффективный результат, как и очно.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ОТЗЫВЫ -->
+    <section class="reviews" id="reviews">
+        <div class="section-container fade-in">
+            <h2 class="section-title">Отзывы клиентов</h2>
+            <div class="divider"></div>
+            <p class="section-subtitle">Слова благодарности от тех, кто уже прошёл этот путь</p>
+
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <p class="review-text">
+                        Юлия помогла мне пережить сложнейший период в жизни. Её бережный подход и 
+                        профессионализм помогли мне заново обрести уверенность в себе. Благодарна бесконечно!
+                    </p>
+                    <div class="review-author">
+                        <div class="review-avatar">А</div>
+                        <div>
+                            <div class="review-name">Анна, 34 года</div>
+                            <div class="review-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <p class="review-text">
+                        Обратились с мужем к Юлии, когда казалось, что наш брак на грани. Через несколько 
+                        месяцев терапии мы стали ближе, чем когда-либо. Юлия — настоящий профессионал.
+                    </p>
+                    <div class="review-author">
+                        <div class="review-avatar">М</div>
+                        <div>
+                            <div class="review-name">Марина, 41 год</div>
+                            <div class="review-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <p class="review-text">
+                        Телесная терапия с Юлией — это невероятный опыт. Я наконец поняла, как много 
+                        напряжения копилось в теле годами. После сессий чувствую лёгкость и свободу.
+                    </p>
+                    <div class="review-author">
+                        <div class="review-avatar">Е</div>
+                        <div>
+                            <div class="review-name">Елена, 29 лет</div>
+                            <div class="review-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <p class="review-text">
+                        Долго не решался обратиться к сексологу, но Юлия создала настолько комфортную 
+                        атмосферу, что все страхи ушли. Результат превзошёл все ожидания.
+                    </p>
+                    <div class="review-author">
+                        <div class="review-avatar">Д</div>
+                        <div>
+                            <div class="review-name">Дмитрий, 38 лет</div>
+                            <div class="review-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <p class="review-text">
+                        Юлия — редкий специалист, который совмещает глубокие знания и настоящую 
+                        человеческую теплоту. После терапии моя жизнь изменилась к лучшему.
+                    </p>
+                    <div class="review-author">
+                        <div class="review-avatar">О</div>
+                        <div>
+                            <div class="review-name">Ольга, 45 лет</div>
+                            <div class="review-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <p class="review-text">
+                        Консультации онлайн оказались очень удобными и эффективными. Юлия внимательна, 
+                        деликатна и всегда находит правильные слова. Рекомендую от всего сердца!
+                    </p>
+                    <div class="review-author">
+                        <div class="review-avatar">И</div>
+                        <div>
+                            <div class="review-name">Ирина, 32 года</div>
+                            <div class="review-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- КОНТАКТЫ -->
+    <section class="contact" id="contact">
+        <div class="section-container fade-in">
+            <h2 class="section-title">Свяжитесь со мной</h2>
+            <div class="divider"></div>
+            <p class="section-subtitle">Сделайте первый шаг навстречу себе</p>
+
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h3>Запишитесь на консультацию</h3>
+                    <p>
+                        Первый шаг — всегда самый сложный. Напишите мне, и мы вместе разберёмся, 
+                        как я могу вам помочь. Первичная беседа — бесплатно.
+                    </p>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-item-text">
+                            <a href="tel:+79001234567">+7 (900) 123-45-67</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-item-text">
+                            <a href="mailto:yulia.psycholog@mail.ru">yulia.psycholog@mail.ru</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">💬</div>
+                        <div class="contact-item-text">
+                            <a href="https://t.me/yulia_psycholog" target="_blank">Telegram: @yulia_psycholog</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-item-text">
+                            Очные консультации и онлайн
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="#" class="social-link" title="Telegram">✈️</a>
+                        <a href="#" class="social-link" title="WhatsApp">📱</a>
+                        <a href="#" class="social-link" title="Instagram">📷</a>
+                        <a href="#" class="social-link" title="VK">💬</a>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <form id="contactForm" onsubmit="handleSubmit(event)">
+                        <div class="form-group">
+                            <label for="name">Ваше имя</label>
+                            <input type="text" id="name" name="name" placeholder="Как к вам обращаться?" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Телефон или Telegram</label>
+                            <input type="text" id="phone" name="phone" placeholder="+7 (___) ___-__-__ или @username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Сообщение</label>
+                            <textarea id="message" name="message" placeholder="Кратко опишите ваш запрос или задайте вопрос..."></textarea>
+                        </div>
+                        <button type="submit" class="form-submit">Отправить заявку</button>
+                        <div class="form-success" id="formSuccess">
+                            ✓ Спасибо! Ваша заявка отправлена. Я свяжусь с вами в ближайшее время.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2024 Юлия — Психолог, Сексолог, Телесный терапевт. Все права защищены.</p>
+    </footer>
 
     <script>
-        let gameState = {
-            level: 1,
-            score: 0,
-            anxiety: 0,
-            decisions: 0,
-            currentScenario: 0
-        };
-
-        const scenarios = [
-            {
-                level: 1, name: "Пробуждение",
-                text: "Вы просыпаетесь в незнакомой комнате. Стены покрыты странными символами. За окном густой туман. Телефон на столе мигает красным. Что вы сделаете?",
-                choices: [
-                    { text: "📱 Проверить сообщения на телефоне", anxiety: 5, score: 15 },
-                    { text: "🔍 Изучить символы на стенах", anxiety: -3, score: 25 },
-                    { text: "🚪 Немедленно покинуть комнату", anxiety: 12, score: 20 },
-                    { text: "🪟 Посмотреть в окно", anxiety: 7, score: 18 }
-                ]
-            },
-            {
-                level: 2, name: "Коридор теней",
-                text: "Бесконечный коридор. Тени на стенах движутся сами по себе. Слышны шаги позади, но когда оборачиваетесь - никого нет.",
-                choices: [
-                    { text: "🏃 Побежать вперёд к свету", anxiety: 10, score: 20 },
-                    { text: "👂 Остановиться и прислушаться", anxiety: -2, score: 30 },
-                    { text: "🕯️ Зажечь спичку", anxiety: 6, score: 25 },
-                    { text: "🤚 Коснуться тени", anxiety: 15, score: 35 }
-                ]
-            },
-            {
-                level: 3, name: "Зеркальная комната",
-                text: "Комната полна зеркал. Ваше отражение улыбается, хотя вы этого не делаете. В другом зеркале видна совершенно другая комната.",
-                choices: [
-                    { text: "👁️ Смотреть в глаза отражению", anxiety: 8, score: 25 },
-                    { text: "🔨 Разбить зеркало", anxiety: 18, score: 40 },
-                    { text: "🚶 Пройти к другому зеркалу", anxiety: -4, score: 35 },
-                    { text: "🙈 Закрыть глаза и идти наощупь", anxiety: 14, score: 30 }
-                ]
-            },
-            {
-                level: 4, name: "Библиотека забытых слов",
-                text: "Бесконечные стеллажи с книгами без названий. Одна книга светится. На столе конверт с вашим именем.",
-                choices: [
-                    { text: "📖 Открыть светящуюся книгу", anxiety: 11, score: 40 },
-                    { text: "✉️ Прочитать письмо", anxiety: -5, score: 30 },
-                    { text: "🔦 Искать выход с фонарём", anxiety: 7, score: 28 },
-                    { text: "🪑 Сесть и подождать", anxiety: 4, score: 22 }
-                ]
-            },
-            {
-                level: 5, name: "Лестница решений",
-                text: "Лестница вверх и вниз. Наверху свет и крики. Внизу тьма и тишина. Посередине дверь 'НЕ ОТКРЫВАТЬ'.",
-                choices: [
-                    { text: "⬆️ Подняться к свету", anxiety: 9, score: 38 },
-                    { text: "⬇️ Спуститься в темноту", anxiety: 16, score: 50 },
-                    { text: "🚪 Открыть запретную дверь", anxiety: 20, score: 60 },
-                    { text: "🧘 Медитировать здесь", anxiety: -8, score: 32 }
-                ]
-            },
-            {
-                level: 6, name: "Комната выборов",
-                text: "Четыре двери: 'ИСТИНА', 'ЛОЖЬ', 'ЗАБВЕНИЕ' и одна без надписи, которая медленно открывается сама.",
-                choices: [
-                    { text: "✨ Войти в дверь ИСТИНЫ", anxiety: 10, score: 55 },
-                    { text: "🎭 Выбрать дверь ЛЖИ", anxiety: 8, score: 45 },
-                    { text: "🌫️ Пройти через ЗАБВЕНИЕ", anxiety: -6, score: 38 },
-                    { text: "❓ Шагнуть в пустоту", anxiety: 17, score: 65 }
-                ]
-            },
-            {
-                level: 7, name: "Сад воспоминаний",
-                text: "Прекрасный сад. Каждый цветок - живое воспоминание. Садовник предлагает выбрать, что сохранить.",
-                choices: [
-                    { text: "🌹 Сохранить счастливые моменты", anxiety: -7, score: 42 },
-                    { text: "🥀 Взять болезненные уроки", anxiety: 13, score: 58 },
-                    { text: "🌺 Создать новые воспоминания", anxiety: 6, score: 48 },
-                    { text: "🔥 Сжечь весь сад", anxiety: 22, score: 75 }
-                ]
-            },
-            {
-                level: 8, name: "Зал эмоций",
-                text: "Гигантский зал, где эмоции стали физическими. Страх - чёрная масса. Радость - светящийся шар. Гнев - пламя. Печаль - туман.",
-                choices: [
-                    { text: "😨 Обнять свой Страх", anxiety: 15, score: 70 },
-                    { text: "😊 Воспарить к Радости", anxiety: -9, score: 50 },
-                    { text: "😤 Укротить Гнев", anxiety: 19, score: 78 },
-                    { text: "😢 Пройти сквозь Печаль", anxiety: 11, score: 62 }
-                ]
-            },
-            {
-                level: 9, name: "Последний порог",
-                text: "Финальная дверь. Голос шепчет: 'Останься, здесь безопасно'. Другой кричит: 'Беги!' Дверь закрывается.",
-                choices: [
-                    { text: "🚪 Распахнуть дверь", anxiety: 12, score: 80 },
-                    { text: "🏠 Остаться в безопасности", anxiety: -10, score: 45 },
-                    { text: "🔓 Взломать дверь силой", anxiety: 25, score: 95 },
-                    { text: "🤔 Спросить у голосов", anxiety: 8, score: 68 }
-                ]
-            },
-            {
-                level: 10, name: "Пробуждение",
-                text: "Вы понимаете: всё это - ваш разум. Проснуться в реальности или остаться властелином внутреннего мира?",
-                choices: [
-                    { text: "☀️ Проснуться в реальности", anxiety: 0, score: 100 },
-                    { text: "🌙 Остаться властелином снов", anxiety: 28, score: 110 },
-                    { text: "♾️ Начать путешествие заново", anxiety: 10, score: 85 },
-                    { text: "🎭 Принять обе реальности", anxiety: 18, score: 130 }
-                ]
-            }
-        ];
-
-        function startGame() {
-            gameState = { level: 1, score: 0, anxiety: 0, decisions: 0, currentScenario: 0 };
-            showScreen('game-screen');
-            loadScenario();
-            updateStats();
+        // Мобильное меню
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
         }
 
-        function loadScenario() {
-            const scenario = scenarios[gameState.currentScenario];
-            if (!scenario) {
-                endGame(false);
-                return;
+        function closeMenu() {
+            document.getElementById('navLinks').classList.remove('active');
+        }
+
+        // Тень навигации при скролле
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
             }
-            document.getElementById('level-display').textContent = `Уровень ${scenario.level}`;
-            document.getElementById('level-name').textContent = scenario.name;
-            document.getElementById('scenario-text').textContent = scenario.text;
-            const choicesContainer = document.getElementById('choices-container');
-            choicesContainer.innerHTML = '';
-            scenario.choices.forEach((choice, index) => {
-                setTimeout(() => {
-                    const choiceDiv = document.createElement('div');
-                    choiceDiv.className = 'choice';
-                    choiceDiv.textContent = choice.text;
-                    choiceDiv.onclick = () => makeChoice(choice);
-                    choicesContainer.appendChild(choiceDiv);
-                }, index * 150);
+        });
+
+        // Анимация появления блоков при скролле
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
             });
-        }
+        }, { threshold: 0.1 });
 
-        function makeChoice(choice) {
-            gameState.score += choice.score;
-            gameState.anxiety += choice.anxiety;
-            gameState.decisions++;
-            if (gameState.anxiety < 0) gameState.anxiety = 0;
-            if (gameState.anxiety > 100) gameState.anxiety = 100;
-            updateStats();
-            if (choice.anxiety > 12) {
-                document.getElementById('main-container').classList.add('shake');
-                setTimeout(() => document.getElementById('main-container').classList.remove('shake'), 400);
-            }
-            if (gameState.anxiety >= 100) {
-                setTimeout(() => endGame(true), 800);
-                return;
-            }
-            gameState.currentScenario++;
-            gameState.level = gameState.currentScenario + 1;
-            if (gameState.currentScenario >= scenarios.length) {
-                setTimeout(() => endGame(false), 800);
-            } else {
-                setTimeout(() => loadScenario(), 800);
-            }
-        }
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-        function updateStats() {
-            document.getElementById('stat-level').textContent = gameState.level;
-            document.getElementById('stat-score').textContent = gameState.score;
-            document.getElementById('stat-decisions').textContent = gameState.decisions;
-            const anxietyPercent = Math.round(gameState.anxiety);
-            document.getElementById('stat-anxiety').textContent = anxietyPercent + '%';
-            document.getElementById('anxiety-fill').style.width = anxietyPercent + '%';
-        }
-
-        function endGame(anxietyOverload = false) {
-            let title, message;
-            if (anxietyOverload) {
-                title = '😰 ПОГЛОЩЁН СТРАХОМ';
-                message = 'Уровень тревоги достиг критической отметки. Ваш разум не выдержал испытания.';
-            } else if (gameState.score >= 800) {
-                title = '🏆 АБСОЛЮТНЫЙ МАСТЕР';
-                message = 'Невероятно! Вы прошли все 10 уровней с исключительным мастерством!';
-            } else if (gameState.score >= 600) {
-                title = '⭐ ПОБЕДИТЕЛЬ';
-                message = 'Великолепный результат! Вы успешно преодолели все 10 уровней лабиринта сознания!';
-            } else if (gameState.score >= 400) {
-                title = '🎭 ВЫЖИВШИЙ';
-                message = 'Вы прошли все 10 уровней, но путь был непростым.';
-            } else {
-                title = '🌫️ ЗАВЕРШЕНО';
-                message = 'Вы прошли путь до конца! Каждая попытка делает вас сильнее!';
-            }
-            document.getElementById('result-title').textContent = title;
-            document.getElementById('result-message').textContent = message;
-            document.getElementById('final-score').textContent = gameState.score;
-            document.getElementById('final-level').textContent = 10;
-            document.getElementById('final-decisions').textContent = gameState.decisions;
-            document.getElementById('final-anxiety').textContent = Math.round(gameState.anxiety) + '%';
-            showScreen('result-screen');
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function restartGame() { startGame(); }
-        function backToMenu() { showScreen('menu-screen'); }
-        function showRules() {
-            alert(`🎮 ПРАВИЛА "ТЕНИ СОЗНАНИЯ"\n\n📊 ЦЕЛЬ: Пройти все 10 уровней\n\n😰 ТРЕВОГА:\n• При 100% тревоги - игра окончена!\n• Некоторые выборы СНИЖАЮТ тревогу\n• Некоторые ПОВЫШАЮТ\n\n⭐ БАЛЛЫ:\n• Чем опаснее выбор - тем больше баллов\n\n💡 СТРАТЕГИЯ:\n• Балансируйте между риском и безопасностью\n• Угадывайте последствия по тексту\n• НЕТ цветовых подсказок!`);
+        // Обработка формы
+        function handleSubmit(e) {
+            e.preventDefault();
+            const success = document.getElementById('formSuccess');
+            success.classList.add('show');
+            e.target.reset();
+            
+            setTimeout(() => {
+                success.classList.remove('show');
+            }, 5000);
         }
     </script>
+
 </body>
 </html>
+HTMLEOF
